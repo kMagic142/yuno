@@ -1,0 +1,11 @@
+MUSIC: {}
+COMMAND:
+  Anime: true
+  Ping: true
+MODERATION: {}
+ADMIN:
+  Reload: true
+  Disable: true
+  Enable: true
+LISTENER:
+  JoinLeave: true

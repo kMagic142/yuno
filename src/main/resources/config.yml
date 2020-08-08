@@ -1,0 +1,13 @@
+BOT:
+  token: ""
+  prefix: "yuno "
+  activity: "LISTENING"
+  activityMessage: "oki boomer (1 hour perfect loop)"
+  status: "DO_NOT_DISTURB"
+
+LISTENERS:
+  joinLeave:
+    channel: "join-leave"
+    # use %member% for member's name and %mention% for member's mention
+    join-message: "lmao un idiot a intrat! %mention%"
+    leave-message: "lmao un idiot a iesit! %member%"
