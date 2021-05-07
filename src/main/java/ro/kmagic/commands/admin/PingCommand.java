@@ -4,39 +4,30 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.notfab.spigot.simpleconfig.SimpleConfig;
-import ro.kmagic.Main;
 import ro.kmagic.handlers.commands.CommandListener;
 import ro.kmagic.types.ModuleType;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
 
-public class ReloadCommand implements CommandListener {
-
-    private final SimpleConfig messages = Main.getMessages();
+public class PingCommand implements CommandListener {
 
     @Override
     public void onCommand(Member sender, TextChannel channel, Message message, String[] args) {
-        channel.sendMessage(messages.getString("COMMANDS.ADMIN.reload.reloading")).queue();
+        long ping = message.getJDA().getRestPing().complete();
 
-
-        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> Main.reloadModules(channel.getGuild().getId(),channel.getId()));
-
-        future.thenRun(() -> channel.sendMessage(messages.getString("COMMANDS.ADMIN.reload.reloaded")).queue());
+        channel.sendMessage("Bot's ping is **" + ping + "ms**.").queue();
     }
 
     private boolean enabled;
 
     @Override
     public String getModuleName() {
-        return "Reload";
+        return "Ping";
     }
 
     @Override
     public ModuleType getModuleType() {
-        return ModuleType.ADMIN;
+        return ModuleType.COMMAND;
     }
 
     @Override
@@ -56,11 +47,11 @@ public class ReloadCommand implements CommandListener {
 
     @Override
     public ArrayList<Permission> getCommandPermissions() {
-        return new ArrayList<>(Collections.singleton(Permission.ADMINISTRATOR));
+        return null;
     }
 
     @Override
     public String getCommandDescription() {
-        return "Reloads the bot";
+        return "Pong!";
     }
 }

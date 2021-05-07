@@ -1,0 +1,43 @@
+GENERAL:
+  not-enough-arguments: "Not enough arguments provided."
+  enabled: "enabled"
+  disabled: "disabled"
+  coins: "coins"
+  error: "An error occurred. Make sure that all the arguments entered are correct. If this is not the case, please contact the developer."
+
+EVENTS:
+  joinLeave:
+    # use %member% for member's name and %mention% for member's mention
+    join-message: "lmao un idiot a intrat! %mention%"
+    leave-message: "lmao un idiot a iesit! %member%"
+
+COMMANDS:
+  ADMIN:
+    listmodules:
+      modules-available: "**Modules available: %s**"
+    reload:
+      reloading: "Yuno is now reloading all modules..."
+      reloaded: "Reloaded all modules!"
+  ENTERTAINMENT:
+    GAMES:
+      slotmachine:
+        insufficient-funds: "You don't have enough money to place this bet."
+        won: "%s %s - Thats %s %s for you!"
+        rolled: "You rolled %s %s and didn't win anything. Unlucky!"
+        lost: "You lost!"
+    anime:
+      no-synposis: "There is no synopsis written for this anime on MAL."
+      no-studios: "Could not get studios."
+      no-date: "Could not get the date."
+  SOCIAL:
+    COINS:
+      balance:
+        message: "You have **%s coins**"
+      givecoins:
+        message: "You gave **%s coins** to %s. New balance: **%s coins**"
+    EXPERIENCE:
+      exp:
+        message: "You have **%s EXP** and are **Level %s** `[%s/%s EXP]`"
+      leaderboard:
+        no-data: "This server has no data on experience."
+        rank: "Your rank is #%s"

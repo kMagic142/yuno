@@ -1,13 +1,18 @@
 BOT:
-  token: ""
+  token: "empty-as-my-soul"
   prefix: "yuno "
   activity: "LISTENING"
   activityMessage: "oki boomer (1 hour perfect loop)"
   status: "DO_NOT_DISTURB"
 
-LISTENERS:
+EVENTS:
   joinLeave:
-    channel: "join-leave"
-    # use %member% for member's name and %mention% for member's mention
-    join-message: "lmao un idiot a intrat! %mention%"
-    leave-message: "lmao un idiot a iesit! %member%"
+    channel: "testing-chamber"
+
+DATABASE:
+  type: "sqlite"
+  hostname: "localhost"
+  port: "3306"
+  database: "yuno"
+  username: "yuno"
+  password: "password"
