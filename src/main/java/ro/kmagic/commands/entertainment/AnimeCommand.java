@@ -116,7 +116,7 @@ public class AnimeCommand implements CommandListener {
 
     @Override
     public ModuleType getModuleType() {
-        return ModuleType.COMMAND;
+        return ModuleType.GENERAL;
     }
 
     @Override

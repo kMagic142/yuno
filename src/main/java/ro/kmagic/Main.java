@@ -1,7 +1,11 @@
 package ro.kmagic;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import io.sentry.Sentry;
+import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -28,6 +32,8 @@ import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -36,9 +42,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertTrue;
+
 public class Main {
     // bot
     private static JDA jda;
+    private static JdaLavalink lavalink;
+    private static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+
     private static CommandHandler commandHandler;
     private static final List<Module> modules = new ArrayList<>();
     // config
@@ -53,7 +64,7 @@ public class Main {
     private static final EventWaiter waiter = new EventWaiter(scheduler, false);
 
 
-    public static void main(String[] args) throws LoginException, InterruptedException, InstantiationException, IllegalAccessException {
+    public static void main(String[] args) throws Exception {
         Sentry.init(options -> {
             options.setDsn("https://d2fa64e086c545629529135460d1a8d8@o625146.ingest.sentry.io/5753695");
         });
@@ -63,15 +74,33 @@ public class Main {
         JDABuilder jdaBuilder = JDABuilder.createDefault(getConfig().getString("BOT.token"))
                 .setActivity(Activity.of(Activity.ActivityType.valueOf(getConfig().getString("BOT.activity")), getConfig().getString("BOT.activityMessage")))
                 .setStatus(OnlineStatus.valueOf(getConfig().getString("BOT.status")))
-                .addEventListeners(new ReadyEvent())
+                .addEventListeners(new ReadyEvent(), initMusic())
+                .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
                 .enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS));
 
 
         jda = jdaBuilder.build();
         jda.awaitReady();
 
+        assertTrue("Could not connect to lavalink server", lavalink.getNodes().get(0).isAvailable());
+
         registerModules();
 
+    }
+
+    private static JdaLavalink initMusic() {
+        JdaLavalink lavalink = new JdaLavalink(
+                "461539926375137290",
+                1,
+                shardId -> jda
+        );
+
+        lavalink.addNode(URI.create("ws://yuno-music-module.herokuapp.com"), "aa^+{nK[C=\")k4:S2c=8j9");
+
+        AudioSourceManagers.registerRemoteSources(playerManager);
+
+        Main.lavalink = lavalink;
+        return lavalink;
     }
 
     private static void registerModules() throws InstantiationException, IllegalAccessException {
@@ -258,6 +287,14 @@ public class Main {
 
     public static EventWaiter getWaiter() {
         return waiter;
+    }
+
+    public static JdaLavalink getLavalink() {
+        return lavalink;
+    }
+
+    public static AudioPlayerManager getPlayerManager() {
+        return playerManager;
     }
 
 

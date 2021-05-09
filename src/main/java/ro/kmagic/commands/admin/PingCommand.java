@@ -27,7 +27,7 @@ public class PingCommand implements CommandListener {
 
     @Override
     public ModuleType getModuleType() {
-        return ModuleType.COMMAND;
+        return ModuleType.ADMIN;
     }
 
     @Override

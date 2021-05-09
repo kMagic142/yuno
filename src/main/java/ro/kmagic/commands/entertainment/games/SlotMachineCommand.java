@@ -90,7 +90,7 @@ public class SlotMachineCommand implements CommandListener {
 
     @Override
     public ModuleType getModuleType() {
-        return ModuleType.COMMAND;
+        return ModuleType.ECONOMY;
     }
 
     @Override

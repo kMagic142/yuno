@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class HardwareInfoCommand implements CommandListener {
     @Override
@@ -32,11 +34,11 @@ public class HardwareInfoCommand implements CommandListener {
         final DecimalFormat decimalFormat = new DecimalFormat("#,###.##");
         builder.addField(":bar_chart: CPU Usage",
                 "Bot \u00BB " + decimalFormat.format(bean.getProcessCpuLoad() * 100) + "%" + "\n" +
-                        "Machine \u00BB " + decimalFormat.format(bean.getSystemCpuLoad() * 100) + "%", false);
+                        "System \u00BB " + decimalFormat.format(bean.getSystemCpuLoad() * 100) + "%", false);
 
         builder.addField(":bar_chart: RAM Memory Usage",
                 "Bot \u00BB " + Utils.humanReadableByteCount(freeMemory) + "/" + Utils.humanReadableByteCount(maxMemory) + " (" + decimalFormat.format(freeMemory * 1.0 / maxMemory * 100) + "%)\n" +
-                        "Machine \u00BB " + Utils.humanReadableByteCount(bean.getTotalPhysicalMemorySize() - bean.getFreePhysicalMemorySize()) + "/" + Utils.humanReadableByteCount(bean.getTotalPhysicalMemorySize()) + " (" + decimalFormat.format((bean.getTotalPhysicalMemorySize() - bean.getFreePhysicalMemorySize()) * 1.0 / bean.getTotalPhysicalMemorySize() * 100) + "%)",
+                        "System \u00BB " + Utils.humanReadableByteCount(bean.getTotalPhysicalMemorySize() - bean.getFreePhysicalMemorySize()) + "/" + Utils.humanReadableByteCount(bean.getTotalPhysicalMemorySize()) + " (" + decimalFormat.format((bean.getTotalPhysicalMemorySize() - bean.getFreePhysicalMemorySize()) * 1.0 / bean.getTotalPhysicalMemorySize() * 100) + "%)",
                 false);
 
         File serverFolder = new File(new File("./data/").getParentFile().getAbsolutePath()).getParentFile();
@@ -52,6 +54,26 @@ public class HardwareInfoCommand implements CommandListener {
         builder.addField(":bar_chart: Physical Storage Usage",
                 "Occupies \u00BB " + Utils.humanReadableByteCount(size) + "\n" +
                         "Disk \u00BB " + Utils.humanReadableByteCount(totalSpace - used) + "/" + Utils.humanReadableByteCount(totalSpace) + " (" + decimalFormat.format((totalSpace - used) * 1.0 / totalSpace * 100) + "%)", false);
+
+        double nodeCpu = Main.getLavalink().getNodes().get(0).getStats().getLavalinkLoad();
+        double systemCpu = Main.getLavalink().getNodes().get(0).getStats().getSystemLoad();
+        int cpuCores = Main.getLavalink().getNodes().get(0).getStats().getCpuCores();
+        long allocatedMemory = Main.getLavalink().getNodes().get(0).getStats().getMemAllocated();
+        long freeMem = Main.getLavalink().getNodes().get(0).getStats().getMemFree();
+        long uptime = Main.getLavalink().getNodes().get(0).getStats().getUptime();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(uptime);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        String dateString = sdf.format(calendar.getTime());
+
+        builder.addField(":bar_chart: Lavalink Stats",
+                "Node \u00BB " + decimalFormat.format(nodeCpu) + "%\n" +
+                "System \u00BB " + decimalFormat.format(systemCpu) + "%\n" +
+                "CPU Cores \u00BB " + cpuCores + "\n" +
+                "Memory \u00BB " + Utils.humanReadableByteCount(freeMem) + "/" + Utils.humanReadableByteCount(allocatedMemory) +
+                        " (" + decimalFormat.format(freeMem * 1.0 / allocatedMemory * 100) + "%)\n" +
+                "Uptime \u00BB " + dateString, false);
 
         channel.sendMessage(builder.build()).queue();
     }

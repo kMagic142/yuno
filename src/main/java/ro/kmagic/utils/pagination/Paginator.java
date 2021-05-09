@@ -19,36 +19,39 @@ import java.util.function.Consumer;
 
 public class Paginator {
 
-    private final int itemsOnPage;
-    private int pages;
-    private final Consumer<Message> finalAction;
-    private final int timeout;
-    private final TimeUnit timeunit;
-    private final EventWaiter waiter = Main.getWaiter();
+    protected final int itemsOnPage;
+    protected int pages;
+    protected final Consumer<Message> finalAction;
+    protected final int timeout;
+    protected final TimeUnit timeunit;
+    protected final EventWaiter waiter = Main.getWaiter();
 
     @Setter
-    private String description;
+    protected int fieldsLength;
     @Setter
-    private Color color;
+    protected String description;
     @Setter
-    private boolean inline;
+    protected Color color;
     @Setter
-    private HashMap<String, String> fields;
+    protected boolean inline;
     @Setter
-    private String footer;
-    private String title, url, iconUrl;
+    protected HashMap<String, String> fields;
+    @Setter
+    protected String footer;
+    protected String title, url, iconUrl;
 
     public static final String LEFT = "\u25C0";
     public static final String STOP = "\u23F9";
     public static final String RIGHT = "\u25B6";
 
     public Paginator(int itemsOnPage, Consumer<Message> finalAction, int timeout, TimeUnit timeunit) {
-        this.itemsOnPage = itemsOnPage;
         this.finalAction = finalAction;
         this.timeout = timeout;
         this.timeunit = timeunit;
+        this.itemsOnPage = itemsOnPage;
 
         this.inline = false;
+        this.fieldsLength = fields != null ? fields.size() : 0;
     }
 
     private void init(RestAction<Message> action, int page) {
@@ -65,7 +68,7 @@ public class Paginator {
     }
 
     public void paginate(MessageChannel channel, int page) {
-        this.pages = (int)Math.ceil((double)fields.size()/itemsOnPage);
+        this.pages = (int)Math.ceil((double)fieldsLength/itemsOnPage);
 
         if(page < 1)
             page = 1;
@@ -130,7 +133,8 @@ public class Paginator {
         this.iconUrl = iconUrl;
     }
 
-    private Message renderPage(int page) {
+
+    public Message renderPage(int page) {
         MessageBuilder mbuilder = new MessageBuilder();
         EmbedBuilder ebuilder = new EmbedBuilder();
         int start = (page - 1) * itemsOnPage;
@@ -141,10 +145,9 @@ public class Paginator {
 
         ebuilder.setColor(color);
         ebuilder.setDescription(description);
-        ebuilder.setFooter((footer != null ? footer + " * " : "") + "Page " + page + "/" + pages, null);
+        ebuilder.setFooter((footer != null ? footer + " | " : "") + "Page " + page + "/" + pages, null);
 
-        if(title != null)
-            ebuilder.setAuthor(title, url, iconUrl);
+        if(title != null) ebuilder.setAuthor(title, url, iconUrl);
 
         mbuilder.setEmbed(ebuilder.build());
         return mbuilder.build();

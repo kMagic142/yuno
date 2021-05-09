@@ -9,11 +9,14 @@ import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
@@ -61,6 +64,22 @@ public class Utils {
         }
         value *= Long.signum(bytes);
         return String.format("%.1f %cB", value / 1024.0, ci.current());
+    }
+
+    public static boolean isUrl(String url) {
+        try {
+            new URI(url);
+            return true;
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
+
+    public static String formatTime(long timeInMillis) {
+        final long minutes = timeInMillis / TimeUnit.MINUTES.toMillis(1);
+        final long seconds = timeInMillis % TimeUnit.MINUTES.toMillis(1) / TimeUnit.SECONDS.toMillis(1);
+
+        return String.format("%02d:%02d", minutes, seconds);
     }
 
 
