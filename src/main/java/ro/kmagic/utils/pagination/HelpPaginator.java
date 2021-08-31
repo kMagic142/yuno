@@ -19,7 +19,7 @@ public class HelpPaginator extends Paginator {
 
     public void setHelpFields(HashMap<ModuleType, HashMap<String, String>> fields) {
         this.fields = fields;
-        super.fieldsLength = fields.size();
+        super.helpFields = fields;
     }
 
     @Override
@@ -27,23 +27,26 @@ public class HelpPaginator extends Paginator {
         MessageBuilder mbuilder = new MessageBuilder();
         EmbedBuilder ebuilder = new EmbedBuilder();
         HashMap<String, String> pageCmds = new HashMap<>();
-        int start = (page - 1) * itemsOnPage;
-        int end = Math.min(fieldsLength, page * itemsOnPage);
+        ModuleType pageModule = (ModuleType) fields.keySet().toArray()[page];
 
-        for(ModuleType type : ModuleType.values()) {
-            for(ModuleType key : fields.keySet()) {
-                if (key != type) continue;
+        //int start = (page - 1) * itemsOnPage;
+        //int end = page * itemsOnPage;
 
-                for(String cmd : fields.get(key).keySet()) {
-                    pageCmds.put(cmd, fields.get(key).get(cmd));
-                }
+        int start = (int) Math.ceil((double) fields.get(pageModule).size() / itemsOnPage);
+        int end = fields.get(pageModule).size();
 
-            }
+        for(String cmd : fields.get(pageModule).keySet()) {
+            pageCmds.put(cmd, fields.get(pageModule).get(cmd));
         }
 
-        for(int i = start; i < end; i++)
-            ebuilder.addField("" + pageCmds.keySet().toArray()[i], "" + pageCmds.values().toArray()[i], inline);
 
+        System.out.println("S:"+start+" | E:"+end+" | iOP:"+itemsOnPage+" | fL:"+fieldsLength+" | p:"+page);
+
+        for(int i = start; i < end; i++) {
+            ebuilder.addField("" + pageCmds.keySet().toArray()[i], "" + pageCmds.values().toArray()[i], inline);
+        }
+
+        ebuilder.setDescription(pageModule.toString());
         ebuilder.setFooter((footer != null ? footer + " | " : "") + "Page " + page + "/" + pages, null);
 
         if(title != null) ebuilder.setAuthor(title, url, iconUrl);

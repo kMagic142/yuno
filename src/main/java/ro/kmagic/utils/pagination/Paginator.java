@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import ro.kmagic.Main;
+import ro.kmagic.types.ModuleType;
 import ro.kmagic.utils.Utils;
 
 import java.awt.*;
@@ -26,6 +27,8 @@ public class Paginator {
     protected final TimeUnit timeunit;
     protected final EventWaiter waiter = Main.getWaiter();
 
+    @Setter
+    protected HashMap<ModuleType, HashMap<String, String>> helpFields;
     @Setter
     protected int fieldsLength;
     @Setter
@@ -68,7 +71,15 @@ public class Paginator {
     }
 
     public void paginate(MessageChannel channel, int page) {
-        this.pages = (int)Math.ceil((double)fieldsLength/itemsOnPage);
+        for(HashMap<String, String> cmdField : helpFields.values()) {
+            pages += cmdField.size() / itemsOnPage;
+            fieldsLength += cmdField.size();
+        }
+
+        this.pages = (int) Math.floor(this.pages) + (fieldsLength / itemsOnPage);
+
+        System.out.println("Pages:"+pages+" | fL:"+fieldsLength+" | iOP:"+itemsOnPage);
+
 
         if(page < 1)
             page = 1;

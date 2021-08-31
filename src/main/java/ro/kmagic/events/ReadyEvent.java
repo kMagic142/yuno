@@ -19,6 +19,7 @@ public class ReadyEvent extends ListenerAdapter implements Module {
         System.out.println("- Useri: " + Main.getJDA().getUsers().size());
         System.out.println("- Servere: " + Main.getJDA().getGuilds().size());
         System.out.println("------------------------");
+
     }
 
     private boolean enabled;

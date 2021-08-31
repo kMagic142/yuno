@@ -32,6 +32,7 @@ import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class Main {
         return lavalink;
     }
 
-    private static void registerModules() throws InstantiationException, IllegalAccessException {
+    private static void registerModules() throws Exception {
         commandHandler = new CommandHandlerBuilder(jda)
                 .setPrefix(getConfig().getString("BOT.prefix"))
                 .build();
@@ -113,7 +114,7 @@ public class Main {
         Set<Class<? extends CommandListener>> commands = cmdPackage.getSubTypesOf(CommandListener.class);
 
         for (Class<?> cmd : commands) {
-            commandHandler.addCommand(new CommandBuilder((CommandListener) cmd.newInstance()).build());
+            commandHandler.addCommand(new CommandBuilder((CommandListener) cmd.getDeclaredConstructor().newInstance()).build());
         }
 
         // listeners initialization
@@ -121,7 +122,7 @@ public class Main {
         Set<Class<? extends Module>> listeners = listenersPackage.getSubTypesOf(Module.class);
 
         for (Class<?> cmd : listeners) {
-            Module listener = (Module) cmd.newInstance();
+            Module listener = (Module) cmd.getDeclaredConstructor().newInstance();
             modules.add(listener);
             jda.addEventListener(listener, getWaiter());
         }
@@ -216,7 +217,7 @@ public class Main {
         return scheduler.scheduleWithFixedDelay(task, startDelay, repeatDelay, TimeUnit.MILLISECONDS);
     }
 
-    public static void initData() {
+    public static void initData() throws IOException {
         config = new ConfigFile();
         messages = new MessagesFile();
 

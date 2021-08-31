@@ -6,6 +6,7 @@ import net.notfab.spigot.simpleconfig.standalone.StandaloneConfigManager;
 import ro.kmagic.Main;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ConfigFile {
 
@@ -14,16 +15,22 @@ public class ConfigFile {
     private SimpleConfig sc;
     private File file;
 
-    public ConfigFile() {
+    public ConfigFile() throws IOException {
         getFile();
     }
 
-    public File getFile() {
-        if(file == null || folder == null) {
+    public File getFile() throws IOException {
+        if(folder == null) {
             folder = new File(Main.getDataFolder());
-            file = new File(Main.getDataFolder(), "config.yml");
-            if(!file.exists()) scm.copyResource(Main.class.getResourceAsStream("/config.yml"), file);
+            folder.mkdir();
+            if(file == null) {
+                file = new File(Main.getDataFolder(), "config.yml");
+                file.createNewFile();
+            }
         }
+
+        if(file.length() == 0) scm.copyResource(Main.class.getResourceAsStream("/config.yml"), file);
+
         return file;
     }
 
